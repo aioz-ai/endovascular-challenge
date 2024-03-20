@@ -70,3 +70,7 @@ If you want to start from the checkpoint, add the flag `--load` to the above com
 The implementation of this repo is based on 
 [milesial](https://github.com/milesial/Pytorch-UNet)'s work (UNet), [Chen](https://github.com/Beckschen/TransUNet)'s work (TransUNet) and [Hu Cao](https://github.com/HuCaoFighting/Swin-Unet)'s work (SwinUNet). We thank the authors for sharing the code.
 
+### License
+
+MIT License
+
