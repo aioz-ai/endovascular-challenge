@@ -25,12 +25,16 @@ Navigate to the Unet folder first by running `cd Unet`
 To training on the Endovascular data, run the following command: 
 
 ```
-python train.py --amp --dataset_domain animal
+python train.py --amp --dataset_domain DOMAIN
 ```
 
-The value of the `--dataset_domain` flag must be one of the following: `phantom`, `animal`, `sim` (simulation), `real`. 
+To test on the Endovascular data, run the following command: 
 
-If you want to start from the checkpoint, add the flag `--load` to the above command and change the checkpoint directory by modifying the `--ckpt_dir` flag. 
+```
+python test.py --amp --dataset_domain DOMAIN --ckpt_dir CKPT_DIR
+```
+
+Please change the checkpoint directory to load (`CKPT_DIR`) and replace `DOMAIN` (the value of the `--dataset_domain` flag) with one of the following: `phantom`, `animal`, `sim` (simulation), `real`. 
 
 
 ### TransUNet
@@ -40,12 +44,16 @@ Navigate to the TransUnet folder first by running `cd TransUnet`
 To training on the Endovascular data, run the following command: 
 
 ```
-python train.py --dataset_domain animal
+python train.py --dataset_domain DOMAIN
 ```
 
-The value of the `--dataset_domain` flag must be one of the following: `phantom`, `animal`, `sim` (simulation), `real`. 
+To test on the Endovascular data, run the following command: 
 
-If you want to start from the checkpoint, add the flag `--load` to the above command and change the checkpoint directory by modifying the `--ckpt_dir` flag. 
+```
+python test.py --dataset_domain DOMAIN --ckpt_dir CKPT_DIR
+```
+
+Please change the checkpoint directory to load (`CKPT_DIR`) and replace `DOMAIN` (the value of the `--dataset_domain` flag) with one of the following: `phantom`, `animal`, `sim` (simulation), `real`.
 
 Currenly, we only benchmark TransUNet on this dataset with the `R50-ViT-B-16` backbone architecture. You can try more backbones by modifying the `--arch` flag. 
 
@@ -58,12 +66,16 @@ The pre-trained swin transformer model (Swin-T) can be download [here](https://v
 To training on the Endovascular data, run the following command: 
 
 ```
-python train.py --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --dataset_domain animal
+python train.py --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --dataset_domain DOMAIN
+``` 
+
+To test on the Endovascular data, run the following command: 
+
+```
+python test.py --cfg configs/swin_tiny_patch4_window7_224_lite.yaml --dataset_domain DOMAIN --ckpt_dir CKPT_DIR
 ```
 
-The value of the `--dataset_domain` flag must be one of the following: `phantom`, `animal`, `sim` (simulation), `real`. 
-
-If you want to start from the checkpoint, add the flag `--load` to the above command and change the checkpoint directory by modifying the `--ckpt_dir` flag.w
+Please change the checkpoint directory to load (`CKPT_DIR`) and replace `DOMAIN` (the value of the `--dataset_domain` flag) with one of the following: `phantom`, `animal`, `sim` (simulation), `real`.
 
 ## Acknowledgment 
 
