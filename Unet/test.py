@@ -81,7 +81,7 @@ def main():
     model.load_state_dict(ckpt)
 
     model.to(device=device)
-    val_set = MedDataset(images_dir=pt_test_dir_img, mask_dir=pt_test_dir_mask,domain='animal')
+    val_set = MedDataset(images_dir=pt_test_dir_img, mask_dir=pt_test_dir_mask,domain=domain)
     val_loader_args = dict(batch_size=args.batch_size, num_workers=os.cpu_count(), pin_memory=True)
     val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **val_loader_args)
     
