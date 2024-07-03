@@ -16,7 +16,7 @@ import wandb
 from utils import DiceLoss
 from torchvision import transforms
 from utils import test_single_volume
-from cal_metric import jaccard, calculate_miou
+from cal_metric import dice_and_jaccard, calculate_miou
 import torch.optim as optim
 from datasets.med_dataset import RandomGenerator, MedDataset
 
@@ -119,7 +119,7 @@ def trainer(device, args, model, snapshot_path):
     )
     
     for epoch_num in iterator:
-        dice_score= 0
+        #dice_score= 0
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
             image_batch, label_batch = image_batch.to(device), label_batch.to(device)
@@ -148,9 +148,9 @@ def trainer(device, args, model, snapshot_path):
         list_label =[] 
         for test_sample in tqdm(testloader): 
             image, label = test_sample["image"], test_sample["label"]
-            dice_per_sample,pred,lab= test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
+            _,pred,lab= test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
                                       test_save_path=None,case=None, z_spacing=1, device = device)
-            dice_score += dice_per_sample
+            #dice_score += dice_per_sample
             list_pred.append(pred)
             list_label.append(lab) 
 
@@ -158,23 +158,23 @@ def trainer(device, args, model, snapshot_path):
 
         list_pred = torch.cat(list_pred, dim = 0)
         list_label = torch.cat(list_label, dim = 0)
-        jacc = jaccard(list_pred, list_label)
+        dice_score, jacc = dice_and_jaccard(list_pred, list_label, ignore_index=None) #ignore_index should be in {0, ..., num_classes-1}
         miou = calculate_miou(list_pred, list_label)
-        performance = dice_score / len(db_test)
+        #performance = dice_score / len(db_test)
         
-        print(f"Dice: {performance}, mIoU: {miou}, Jacc: {jacc}")
+        print(f"Dice: {dice_score}, mIoU: {miou}, Jacc: {jacc}")
         # save the best model (best miou)
         if miou>best_performance: 
             best_performance=miou
-            save_mode_path = os.path.join(snapshot_path, 'best_dice.pth')
+            save_mode_path = os.path.join(snapshot_path, 'best_mIoU.pth')
             torch.save(model.state_dict(), save_mode_path)
-            print("Save best model with the best dice score = {} ".format(miou))
+            print("Save best model with the best mIoU = {} ".format(miou))
         logging.info("Performance at epoch iter {}: {}".format(epoch_num, miou))
 
         experiment.log({
                     'learning rate': base_lr,
                     "miou": miou,
-                    'validation Dice': performance,
+                    'validation Dice': dice_score,
                     "jaccard": jacc, 
                     
                     'step': iter_num,

@@ -62,12 +62,7 @@ def calculate_metric_percase(pred, gt):
 
 def test_single_volume(im, lab, net, classes, patch_size=[256, 256], test_save_path=None,  case=None, z_spacing=1, device= None):
     image, label = im.cpu().detach().numpy(), lab.cpu().detach().numpy()
-    #print(image.shape)
-    #print(label.shape)
-    #net = net.to("cpu")
     if len(image.shape) == 4:
-        # print(image.shape) # (1, x,y)
-        # print(label.shape)
         prediction = np.zeros_like(label)
         for ind in range(image.shape[0]):
             slice = image[ind, :, :, :]
@@ -99,7 +94,6 @@ def test_single_volume(im, lab, net, classes, patch_size=[256, 256], test_save_p
             prediction = out.cpu().detach().numpy()
     mask_pred = F.one_hot(torch.from_numpy(prediction), classes).permute(0, 3, 1, 2).float().cpu()
     mask_true = F.one_hot(lab, classes).permute(0, 3, 1, 2).float().cpu()
-    #print(mask_pred.shape, mask_true.shape)
     dice = multiclass_dice_coeff(mask_pred[:, 1:], mask_true[:, 1:], reduce_batch_first=False)
 
     return dice, torch.from_numpy(prediction).cpu(), torch.from_numpy(label).cpu()

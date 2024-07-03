@@ -1,11 +1,12 @@
 import torchmetrics 
 import ignite 
+from torchmetrics.classification import Dice
 
+def dice_and_jaccard(pred,label, ignore_index = None): 
+    jaccard = torchmetrics.JaccardIndex(task = 'multiclass',average = 'macro', num_classes = 3, ignore_index= ignore_index)
+    dice = Dice(average='macro', num_classes=3, ignore_index = None)
+    return dice(pred, label), jaccard(pred,label)
 
-def jaccard(pred,label): 
-    #print(pred.shape, label.shape)
-    jaccard = torchmetrics.JaccardIndex(task = 'multiclass', num_classes = 3)
-    return jaccard(pred,label).item()
 
 from collections import OrderedDict
 

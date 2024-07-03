@@ -14,7 +14,7 @@ from tqdm import tqdm
 from utils import DiceLoss
 from torchvision import transforms
 from utils import test_single_volume
-from cal_metric import jaccard, calculate_miou
+from cal_metric import dice_and_jaccard, calculate_miou
 from evaluate import evaluate
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -80,7 +80,7 @@ def trainer(device, args, model, snapshot_path):
 
     for epoch_num in iterator:
         model.train()
-        dice_score = 0.0
+        #dice_score = 0.0
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
             image_batch, label_batch = image_batch.to(device), label_batch.to(device)
@@ -109,18 +109,18 @@ def trainer(device, args, model, snapshot_path):
         list_label =[] 
         for test_sample in tqdm(testloader): 
             image, label = test_sample["image"], test_sample["label"]
-            dice_per_sample,pred,lab= test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
+            _,pred,lab= test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
                                     test_save_path=None,case=None, z_spacing=1, device = device)
-            dice_score += dice_per_sample
+            #dice_score += dice_per_sample
             list_pred.append(pred)
             list_label.append(lab) 
 
         list_pred = torch.stack(list_pred, dim=0).squeeze()
         list_label = torch.stack(list_label, dim = 0).squeeze()
 
-        jacc = jaccard(list_pred, list_label)
+        dice_score, jacc = dice_and_jaccard(list_pred, list_label, ignore_index=None) # ignore index should be {0, ..., num_classes - 1}
         miou = calculate_miou(list_pred, list_label)
-        dice_score = dice_score / len(db_test)
+        #dice_score = dice_score / len(db_test)
 
         if miou>best_performance: 
             best_performance=miou
@@ -128,7 +128,7 @@ def trainer(device, args, model, snapshot_path):
             torch.save(model.state_dict(), save_mode_path)
             print("Save best model with the best miou score = {} ".format(dice_score))
         
-        print("Performance at epoch iter {}: {} - {} - {}".format(epoch_num, dice_score, miou, jacc))
+        print("Performance at epoch iter {}: Dice = {} - mIoU = {} - Jaccard = {}".format(epoch_num, dice_score, miou, jacc))
         lr_ = base_lr * (1.0 - iter_num / max_iterations) ** 0.9
         experiment.log({
                     'learning rate': lr_,

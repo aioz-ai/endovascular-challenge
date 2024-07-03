@@ -86,8 +86,8 @@ def main():
     val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **val_loader_args)
     
 
-    acc , val_score, jac, miou = evaluate(model, val_loader, device, amp=True)
-    print(f'Accuracy: {acc} -- Dice score: {val_score} -- Jaccard: {jac} -- mIoU: {miou} ')
+    val_score, jac, miou = evaluate(model, val_loader, device, amp=True)
+    print(f'Dice score: {val_score} -- Jaccard: {jac} -- mIoU: {miou} ')
 
 if __name__ == "__main__":
     main()

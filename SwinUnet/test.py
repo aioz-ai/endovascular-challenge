@@ -13,7 +13,7 @@ from datasets.med_dataset import RandomGenerator,MedDataset
 from utils import test_single_volume
 from networks.vision_transformer import SwinUnet as ViT_seg
 from config import get_config
-from cal_metric import jaccard, calculate_miou
+from cal_metric import dice_and_jaccard, calculate_miou
 from torchvision import transforms
 parser = argparse.ArgumentParser()
 # parser.add_argument('--volume_path', type=str,
@@ -68,16 +68,13 @@ def inference(args, model, test_save_path=None):
     testloader = DataLoader(db_test, batch_size=1, shuffle=False, num_workers=1)
     logging.info("{} test iterations per epoch".format(len(testloader)))
     model.eval()
-    dice_score = 0
-    test_acc = 0
     list_pred = [] 
     list_label=[]
     for test_sample in tqdm(testloader): 
             image, label = test_sample["image"], test_sample["label"]
-            acc, dice_per_sample,pred,lab= test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
+            _,pred,lab= test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
                                       test_save_path=None,case=None, z_spacing=1, device = "cuda")
-            test_acc+=acc
-            dice_score += dice_per_sample
+            #dice_score += dice_per_sample
             list_pred.append(pred)
             list_label.append(lab) 
 
@@ -85,11 +82,11 @@ def inference(args, model, test_save_path=None):
 
     list_pred = torch.cat(list_pred, dim = 0)
     list_label = torch.cat(list_label, dim = 0)
-    jacc = jaccard(list_pred, list_label)
+    dice_score, jacc = dice_and_jaccard(list_pred, list_label, ignore_index=None)
     miou = calculate_miou(list_pred, list_label)
-    performance = dice_score / len(db_test)
-    accuracy = test_acc/len(db_test)
-    print(f"Accuracy: {accuracy} -- Jaccard: {jacc} -- mIoU: {miou} -- Dice score: {performance}")
+    #performance = dice_score / len(db_test)
+    #accuracy = test_acc/len(db_test)
+    print(f"Jaccard: {jacc} -- mIoU: {miou} -- Dice score: {dice_score}")
 
 
 if __name__ == "__main__":
