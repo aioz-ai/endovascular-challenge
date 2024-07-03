@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-from cal_metric import jaccard, calculate_miou
+from cal_metric import dice_and_jaccard, calculate_miou
 import torch
 from torch import Tensor
 
@@ -45,7 +45,7 @@ def count_f(pred: Tensor, true: Tensor):
 def evaluate(net, dataloader, device):
     net.eval()
     num_val_batches = len(dataloader)
-    dice_score = 0
+    #dice_score = 0
     list_pred= []
     list_label = []
     # iterate over the validation set
@@ -75,7 +75,7 @@ def evaluate(net, dataloader, device):
                 mask_true = F.one_hot(mask_true, net.num_classes).permute(0, 3, 1, 2).float()
                 mask_pred = F.one_hot(mask_pred.argmax(dim=1), net.num_classes).permute(0, 3, 1, 2).float()
                 # compute the Dice score, ignoring background
-                dice_score += multiclass_dice_coeff(mask_pred[:, 1:], mask_true[:, 1:], reduce_batch_first=False)
+                # dice_score += multiclass_dice_coeff(mask_pred[:, 1:], mask_true[:, 1:], reduce_batch_first=False)
                 
 
                 
@@ -85,6 +85,6 @@ def evaluate(net, dataloader, device):
     list_pred = torch.stack(list_pred, dim=0)
     list_label = torch.stack(list_label, dim=0)
 
-    j = jaccard(list_pred, list_label)
+    dice_score, j = dice_and_jaccard(list_pred, list_label)
     miou = calculate_miou(list_pred, list_label)
-    return dice_score / max(num_val_batches, 1), j, miou
+    return dice_score, j, miou

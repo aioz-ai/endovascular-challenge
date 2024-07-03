@@ -4,7 +4,7 @@ from torchmetrics.classification import Dice
 
 def dice_and_jaccard(pred,label, ignore_index = None): 
     jaccard = torchmetrics.JaccardIndex(task = 'multiclass',average = 'macro', num_classes = 3, ignore_index= ignore_index)
-    dice = Dice(average='macro', num_classes=3, ignore_index = None)
+    dice = Dice(average='macro', num_classes=3, ignore_index = ignore_index)
     return dice(pred, label), jaccard(pred,label)
 
 
