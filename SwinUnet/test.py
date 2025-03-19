@@ -101,7 +101,7 @@ if __name__ == "__main__":
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed(args.seed)
 
-    domain = args.domain
+    domain = args.dataset_domain
     assert domain in ["animal", "phantom", "sim", "real"], f'The domain of dataset ({domain}) must be one of the following:["animal", "phantom", "sim", "real"] '
     if domain == "animal" or domain == "phantom":    
         args.num_classes = 3 

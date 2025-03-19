@@ -77,7 +77,8 @@ def main():
     
     dir_checkpoint = Path(args.ckpt_dir)
     ckpt = torch.load(dir_checkpoint)
-    #del ckpt['mask_values']
+    if 'mask_values' in ckpt.keys():
+        del ckpt['mask_values']
     model.load_state_dict(ckpt)
 
     model.to(device=device)

@@ -1,9 +1,9 @@
 import numpy as np
 import torch
-from medpy import metric
+# from medpy import metric
 from scipy.ndimage import zoom
 import torch.nn as nn
-import SimpleITK as sitk
+# import SimpleITK as sitk
 import copy
 from torchmetrics.functional.classification import dice as DiceMetric
 import torch.nn.functional as F

@@ -117,7 +117,7 @@ if __name__ == "__main__":
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
     net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).to(device)
     
-    ckpt_dir = "checkpoints/pt_ani/TU_R50-ViT-B_16_skip0_epo100_bs2_lr0.01_256_s40000/epoch_99.pth" #animal
+    ckpt_dir = args.ckpt_dir
     net.load_state_dict(torch.load(ckpt_dir))
 
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
